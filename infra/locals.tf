@@ -18,7 +18,11 @@ locals {
   # is allowed to assume it.
   create_github_deploy_role = var.github_org != ""
 
+  # GitHub now embeds immutable org/repo IDs into the OIDC "sub" claim, e.g.
+  # "repo:guilene1@203352549/pet-clinic-pipeline@1382023369:ref:refs/heads/main"
+  # instead of the plain "repo:guilene1/pet-clinic-pipeline:ref:...". Wildcard
+  # the "@<id>" segments so the trust policy still matches on org/repo name.
   github_oidc_subjects = length(var.github_oidc_subjects) > 0 ? var.github_oidc_subjects : [
-    "repo:${var.github_org}/${var.github_repo}:*"
+    "repo:${var.github_org}@*/${var.github_repo}@*:*"
   ]
 }
